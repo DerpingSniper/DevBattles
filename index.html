@@ -1,177 +1,213 @@
 <!DOCTYPE html>
-<HTML>
+<html>
+
 <head>
-<meta charset="utf-8">
-<title>Node Platformer</title>
-<style>
-body {
-    padding:0px;
-    margin:0px;
-    background:#666;
-}
-canvas {
-    display:block;
-    background-image: url("bg.png");
-}
-</style>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-var socket = io.connect();
+	<meta charset="utf-8">
+	<title>Node Platformer</title>
+	<style>
+		body {
+			padding: 0px;
+			margin: 0px;
+			background: #666;
+		}
+		canvas {
+			display: block;
+			background-image: url("bg.png");
+		}
 
-//canvas vars
-var canvas;
-var CANVAS_W;
-var CANVAS_H;
-var ctx;
+	</style>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		var socket = io.connect();
 
-//keypress vars
-var rightKey = false;
-var leftKey = false;
-var upKey = false;
-var downKey = false;
+		//canvas vars
+		var canvas;
+		var CANVAS_W;
+		var CANVAS_H;
+		var ctx;
 
-//key-binding vars
-var RIGHT = 39;
-var LEFT = 37;
-var UP = 38;
-var DOWN = 40;
+		//keypress vars
+		var rightKey = false;
+		var leftKey = false;
+		var upKey = false;
+		var downKey = false;
+		var fireKey = false;
 
-//player vars
-var player;
-var players = [];
+		//key-binding vars
+		var RIGHT = 39;
+		var LEFT = 37;
+		var UP = 38;
+		var DOWN = 40;
+		var FIRE = 32;
 
-//misc vars
-var platforms = [];
-var plat = new Image();
-    plat.src = "platform.png";
-var FPS = 30;
+		//player vars
+		var player;
+		var players = [];
 
-//game loop
-function gameLoop() {
-    clearCanvas();
-    drawPlatforms();
-    drawPlayers();
-}
+		//misc vars
+		var platforms = [];
+		var fireballs = [];
+		var FPS = 150;
+        
+        var plat = new Image();
+        plat.src = "plat.png";
 
-//init functions
-function init() {
-    canvas = document.getElementById('canvas');
-    canvas.width = CANVAS_W;
-    canvas.height = CANVAS_H;
-    ctx = canvas.getContext('2d');
-    document.addEventListener('keydown', keyDown, false);
-    document.addEventListener('keyup', keyUp, false);
-    setInterval(gameLoop, 1000/FPS);
-}
+		//game loop
+		function gameLoop() {
+			clearCanvas();
+			drawPlatforms();
+			drawPlayers();
+			drawFireball();
+		}
 
-//draw functions
-function clearCanvas() {
-    ctx.clearRect(0,0,CANVAS_W,CANVAS_H);
-}
+		//init functions
+		function init() {
+			canvas = document.getElementById('canvas');
+			canvas.width = CANVAS_W;
+			canvas.height = CANVAS_H;
+			ctx = canvas.getContext('2d');
+			document.addEventListener('keydown', keyDown, false);
+			document.addEventListener('keyup', keyUp, false);
+			setInterval(gameLoop, 1000 / FPS);
+		}
 
-function drawPlatforms() {
-    for(var p in platforms) {
-        ctx.drawImage(plat, platforms[p].x, platforms[p].y, 48, 31);
-    }
-}
+		//draw functions
+		function clearCanvas() {
+			ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+		}
 
-function drawPlayers() {
-    for(var p in players) {
-        ctx.fillStyle="white";
-        ctx.fillRect(players[p].x, players[p].y, players[p].w, players[p].h);
-    }
-}
+		function drawPlatforms() {
+			for (var p in platforms) {
+				ctx.drawImage(plat, platforms[p].x, platforms[p].y, platforms[p].w, platforms[p].h);
+			}
+		}
 
-//input functions
-function keyDown(e) {
-    if (e.keyCode == RIGHT) {
-        socket.emit('keyDown', 'right');
-        rightKey = true;
-    } else if (e.keyCode == LEFT) {
-        socket.emit('keyDown', 'left');
-        leftKey = true;
-    }
+		function drawPlayers() {
+			for (var p in players) {
+				ctx.fillStyle = "white";
+				ctx.fillRect(players[p].x, players[p].y, players[p].w, players[p].h);
+			}
+		}
 
-    if (e.keyCode == UP) {
-        socket.emit('keyDown', 'up');
-        upKey = true;
-    } else if (e.keyCode == DOWN) {
-        socket.emit('keyDown', 'down');
-        downKey = true;
-    }
-}
+		function drawFireball() {
+			for (var f in fireballs) {
+				ctx.fillStyle = "red";
+				ctx.fillRect(fireballs[f].x, fireballs[f].y, fireballs[f].w, fireballs[f].h);
+			}
+		}
 
-function keyUp(e) {
-    if (e.keyCode == RIGHT) {
-        socket.emit('keyUp', 'right');
-        rightKey = false;
-    } else if (e.keyCode == LEFT) {
-        socket.emit('keyUp', 'left');
-        leftKey = false;
-    }
+		//input functions
+		function keyDown(e) {
+			if (e.keyCode == RIGHT) {
+				e.preventDefault();
+				socket.emit('keyDown', 'right');
+				rightKey = true;
+			} else if (e.keyCode == LEFT) {
+				e.preventDefault();
+				socket.emit('keyDown', 'left');
+				leftKey = true;
+			}
 
-    if (e.keyCode == UP) {
-        socket.emit('keyUp', 'up');
-        upKey = false;
-    } else if (e.keyCode == DOWN) {
-        socket.emit('keyUp', 'down');
-        downKey = false;
-    }
-}
+			if (e.keyCode == UP) {
+				e.preventDefault();
+				socket.emit('keyDown', 'up');
+				upKey = true;
+			} else if (e.keyCode == DOWN) {
+				e.preventDefault();
+				socket.emit('keyDown', 'down');
+				downKey = true;
+			}
 
-jQuery(function($){
-    var nickForm = $('#setNick');
-    var nickError = $('#nickError');
-    var nickBox = $('#nickname');
-    var users = $('#users');
-    nickForm.submit(function(e){
-        e.preventDefault();
-        socket.emit('login', nickBox.val(), function(data){
-            if(data) {
-                $('#nickWrap').hide();
-                $('#contentWrap').show();
-                CANVAS_W = data.CANVAS_W;
-                CANVAS_H = data.CANVAS_H;
-                platforms = data.platforms;
-                init();
-            } else {
-                nickError.html('That username is already taken! Try again.');
-            }
-        });
-        nickBox.val('');
-    });
-    socket.on('usernames', function(data) {
-        var html = '';
-        for(i=0; i < data.length; i++) {
-            html += data[i] + '<br>';
-        }
-        users.html(html);
-    });
-    socket.on('update', function(data) {
-        players = data;
-    });
-});
-</script>
+			if (e.keyCode == FIRE) {
+				e.preventDefault();
+				socket.emit('keyDown', 'fire');
+				fireKey = true;
+				console.log
+			}
+		}
+
+		function keyUp(e) {
+			if (e.keyCode == RIGHT) {
+				socket.emit('keyUp', 'right');
+				rightKey = false;
+			} else if (e.keyCode == LEFT) {
+				socket.emit('keyUp', 'left');
+				leftKey = false;
+			}
+
+			if (e.keyCode == UP) {
+				socket.emit('keyUp', 'up');
+				upKey = false;
+			} else if (e.keyCode == DOWN) {
+				socket.emit('keyUp', 'down');
+				downKey = false;
+			}
+
+			if (e.keyCode == FIRE) {
+				e.preventDefault();
+				socket.emit('keyUp', 'fire');
+				fireKey = false;
+			}
+		}
+
+		jQuery(function ($) {
+			var nickForm = $('#setNick');
+			var nickError = $('#nickError');
+			var nickBox = $('#nickname');
+			var users = $('#users');
+			nickForm.submit(function (e) {
+				e.preventDefault();
+				socket.emit('login', nickBox.val(), function (data) {
+					if (data) {
+						$('#nickWrap').hide();
+						$('#contentWrap').show();
+						CANVAS_W = data.CANVAS_W;
+						CANVAS_H = data.CANVAS_H;
+						platforms = data.platforms;
+						init();
+					} else {
+						nickError.html('<h2 style=color:#FFF;>That username is already taken! Try again.</h2>');
+					}
+				});
+				nickBox.val('');
+			});
+			socket.on('usernames', function (data) {
+				var html = '';
+				for (i = 0; i < data.length; i++) {
+					html += '<h1 style=color:#FFF;>' + data[i] + '</h1>';
+				}
+				users.html(html);
+			});
+			socket.on('update', function (data) {
+				players = data.players;
+				fireballs = data.fireballs;
+			});
+		});
+	</script>
 </head>
+
 <body>
 
-<div id="nickWrap" style="margin:50px;">
-    <p>Enter a username:</p>
-    <p id="nickError"></p>
-    <form id="setNick">
-    <input style="width:150px;" id="nickname">
-    <input type="submit">
-    </form>
-</div>
+	<div id="nickWrap" style="margin:50px;">
+		<h1 style=color:#FFF;>Enter a username:</h1>
+		<p id="nickError"></p>
+		<form id="setNick">
+			<input style="width:150px;" id="nickname">
+			<input type="submit">
+		</form>
+	</div>
 
-<div style="width:100%;display:none;" id="contentWrap">
-    <div style="margin:50px;">
-        <div style="float:left;margin-right:15px;"><canvas id="canvas"></canvas></div>
-        <div id="users"></div>
-    </div>
-    <div id="output"></div>
-</div>
+	<div style="width:100%;display:none;" id="contentWrap">
+		<div style="margin:50px;">
+			<div style="float:left;margin-right:15px;">
+				<canvas id="canvas"></canvas>
+			</div>
+			<div id="users"></div>
+		</div>
+		<div id="output"></div>
+	</div>
 
 </body>
-</HTML>
+
+</html>

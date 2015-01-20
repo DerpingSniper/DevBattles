@@ -7,6 +7,7 @@
     "url": "git://github.com/allknowingfrog/node-platformer.git"
   },
   "author": "Jeremiah Bohling",
+  "co-author": "Corbin Smith",
   "dependencies": {
     "express": "~4.10.6",
     "socket.io": "~1.2.1"
