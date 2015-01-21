@@ -7,6 +7,7 @@ var player = require('./player.js');
 
 //globals
 users = {};
+colors = {};
 players = {};
 platforms = [];
 fireballs = [];
@@ -25,6 +26,7 @@ FPS = 150;
 server.listen(3000);
 
 app.use(express.static(__dirname + '/img'));
+app.use(express.static(__dirname + '/sound'));
 
 app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/index.html');
@@ -32,20 +34,31 @@ app.get('/', function (req, res) {
 
 io.sockets.on('connection', function (socket) {
 	socket.on('login', function (data, callback) {
+        
+        var nick = data[0];
+        var color = data[1];
 
-		if (data in users) {
+        console.log("n: " + data[0] + "  c: " + data[1]);
+        
+		if (nick in users) {
+            console.log("Username is broken");
 			callback(false);
-		} else if (data) {
+		}else if (color in colors) {
+            console.log("Color is broken");
+			callback(false);
+		}else if (nick && color) {
 			callback({
 				CANVAS_W: CANVAS_W,
 				CANVAS_H: CANVAS_H,
 				platforms: platforms
 			});
-			socket.nickname = data;
+			socket.nickname = nick;
 			users[socket.nickname] = socket;
-			players[socket.nickname] = new player(socket.nickname, CANVAS_W / 2 - PLAYER_W / 2, 0, PLAYER_W, PLAYER_H);
-			io.sockets.emit('usernames', Object.keys(users));
+			players[socket.nickname] = new player(socket.nickname, color, CANVAS_W / 2 - PLAYER_W / 2, 0, PLAYER_W, PLAYER_H);
+            colors[color] = socket.nickname;
+			io.sockets.emit('usernames', colors);
 		} else {
+            console.log("Both failed.");
 			callback(false);
 		}
 	});
@@ -57,9 +70,10 @@ io.sockets.on('connection', function (socket) {
 	});
 	socket.on('disconnect', function (data) {
 		if (socket.nickname) {
+            delete colors[players[socket.nickname].color];
 			delete users[socket.nickname];
 			delete players[socket.nickname];
-			io.sockets.emit('usernames', Object.keys(users));
+			io.sockets.emit('usernames', colors);
 		} else {
 			return;
 		}
@@ -121,7 +135,8 @@ function gameLoop() {
 			x: player.x,
 			y: player.y,
 			w: player.w,
-			h: player.h
+			h: player.h,
+            c: player.color
 		}
 	}
 

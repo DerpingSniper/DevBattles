@@ -1,9 +1,11 @@
 var fireball = require('./fireball.js');
 var collision = require('./collision.js');
 
-module.exports = function (nickname, x, y, w, h) {
+module.exports = function (nickname, color, x, y, w, h) {
 	this.nickname = nickname;
 
+    this.color = color;
+    
 	this.x = x;
 	this.y = y;
 	this.w = w;

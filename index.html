@@ -85,7 +85,7 @@
 
 		function drawPlayers() {
 			for (var p in players) {
-				ctx.fillStyle = "white";
+				ctx.fillStyle = players[p].c;
 				ctx.fillRect(players[p].x, players[p].y, players[p].w, players[p].h);
 			}
 		}
@@ -154,11 +154,15 @@
 		jQuery(function ($) {
 			var nickForm = $('#setNick');
 			var nickError = $('#nickError');
-			var nickBox = $('#nickname');
+			var nickBox = $('#nickname');            
 			var users = $('#users');
+            var color = $('#pickColor');
+            
 			nickForm.submit(function (e) {
+                var form = [nickBox.val(), color.val()];
+                
 				e.preventDefault();
-				socket.emit('login', nickBox.val(), function (data) {
+				socket.emit('login', form, function (data) {
 					if (data) {
 						$('#nickWrap').hide();
 						$('#contentWrap').show();
@@ -167,15 +171,15 @@
 						platforms = data.platforms;
 						init();
 					} else {
-						nickError.html('<h2 style=color:#FFF;>That username is already taken! Try again.</h2>');
+						nickError.html('<h2 style=color:#FFF;>That username is already taken! Please try again.</h2>');
 					}
 				});
 				nickBox.val('');
 			});
 			socket.on('usernames', function (data) {
 				var html = '';
-				for (i = 0; i < data.length; i++) {
-					html += '<h1 style=color:#FFF;>' + data[i] + '</h1>';
+				for (var color in data) {
+					html += '<h1 style=color:' + color + ';>' + data[color] + '</h1>';
 				}
 				users.html(html);
 			});
@@ -193,9 +197,22 @@
 		<h1 style=color:#FFF;>Enter a username:</h1>
 		<p id="nickError"></p>
 		<form id="setNick">
-			<input style="width:150px;" id="nickname">
-			<input type="submit">
+			<input type=text style="width:150px;" id="nickname">
+            <input type="submit">
 		</form>
+        
+        <select id="pickColor" form="setNick">
+            <option selected disabled>Please choose a color</option>
+            <option value="red">Red</option>
+            <option value="#F7941D">Orange</option>
+            <option value="yellow">Yellow</option>
+            <option value="lime">Green</option>
+            <option value="blue">Blue</option>
+            <option value="#2E3192">Indigo</option>
+            <option value="#662D91">Violet</option>
+            <option value="magenta">Magenta</option>
+            <option value="white">White</option>
+        </select>
 	</div>
 
 	<div style="width:100%;display:none;" id="contentWrap">
@@ -208,6 +225,7 @@
 		<div id="output"></div>
 	</div>
 
+    <audio autoplay loop><source src=gameLoop.mp3 type=audio/mpeg></audio>
 </body>
 
 </html>
