@@ -56,7 +56,6 @@
 		//misc vars
 		var platforms = [];
 		var fireballs = [];
-        var port = [];
 		var FPS = 150;
         
         var plat = new Image();
@@ -77,7 +76,6 @@
 			drawPlatforms();
 			drawPlayers();
 			drawFireball();
-            drawPortal();
             frameUp();
         }
         
@@ -130,13 +128,6 @@
                 }
 			}
 		}
-        
-        function drawPortal() {
-            for (var p in port) {
-                ctx.fillStyle = "white";
-                ctx.fillRect(port[p].x, port[p].y, port[p].w, port[p].h);
-            }
-        }
 
 		//input functions
 		function keyDown(e) {

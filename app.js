@@ -4,15 +4,12 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
 var player = require('./player.js');
-var portal = require('./portal.js');
 
 //globals
 users = {};
 colors = {};
 players = {};
 platforms = [];
-
-port = [];
 
 fireballs = {};
 
@@ -118,21 +115,6 @@ platforms[platforms.length] = {
 	y: ~~(CANVAS_H - PLAYER_H*1.01),
 	w: CANVAS_W,
 	h: 100
-};
-//Give the portals a position
-port[port.length] = {
-    x: PLAYER_W,
-    y: CANVAS_H - 20,
-    w: 20,
-    h: 20,
-    id: 1
-};
-port[port.length] = {
-    x: PLAYER_W*5,
-    y: CANVAS_H-150,
-    w: 20,
-    h: 20,
-    id: 2
 };
 
 setInterval(gameLoop, 1000/FPS);
