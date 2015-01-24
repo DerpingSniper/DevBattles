@@ -11,16 +11,12 @@ users = {};
 colors = {};
 players = {};
 platforms = [];
-<<<<<<< HEAD
 
 port = [];
 
 fireballs = {};
 
 fireballID = 0;
-=======
-fireballs = [];
->>>>>>> parent of 09c5436... Added fireballs and ducking and portals soon
 
 CANVAS_W = 600;
 CANVAS_H = 600;
@@ -126,7 +122,6 @@ platforms[platforms.length] = {
 	w: CANVAS_W,
 	h: 100
 };
-<<<<<<< HEAD
 //Give the portals a position
 port[port.length] = {
     x: PLAYER_W,
@@ -144,10 +139,6 @@ port[port.length] = {
 };
 
 setInterval(gameLoop, 1000/FPS);
-=======
-
-setInterval(gameLoop, 1000 / FPS);
->>>>>>> parent of 09c5436... Added fireballs and ducking and portals soon
 
 function gameLoop() {
 	var player, test;

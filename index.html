@@ -60,12 +60,17 @@
 			drawPlatforms();
 			drawPlayers();
 			drawFireball();
-<<<<<<< HEAD
             drawPortal();
             frameUp();
-=======
->>>>>>> parent of 09c5436... Added fireballs and ducking and portals soon
-		}
+        }
+        
+        function frameUp() {
+            var tick = 0
+            if (tick == 15) {
+                frame++;
+            }
+            tick++;
+        }
 
 		//init functions
 		function init() {
