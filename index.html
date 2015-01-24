@@ -18,6 +18,14 @@
 	</style>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
+    
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:800' rel='stylesheet' type='text/css'>
+    
+    <style>
+    body {
+        font-family: 'Open Sans', sans-serif; 
+    }
+    </style>
 	<script>
 		var socket = io.connect();
 
@@ -53,6 +61,15 @@
         
         var plat = new Image();
         plat.src = "plat.png";
+        
+        var fb = new Image();
+        fb.src = "fireballSheet.png";
+        
+        var fbL = new Image();
+        fbL.src = "fireballSheetLeft.png";
+        
+        var frame = 1;
+        var tick = 0;
 
 		//game loop
 		function gameLoop() {
@@ -62,6 +79,7 @@
 			drawFireball();
             drawPortal();
             frameUp();
+<<<<<<< HEAD
         }
         
         function frameUp() {
@@ -70,6 +88,19 @@
                 frame++;
             }
             tick++;
+=======
+		}
+        
+        function frameUp(){
+            tick++;
+            if (tick == 15){
+                frame++;
+                if (frame > 19){
+                    frame = 1;
+                }
+                tick = 0;
+            }
+>>>>>>> parent of 6e91ef0... Revert "Added fireballs and ducking and portals soon"
         }
 
 		//init functions
@@ -103,8 +134,11 @@
 
 		function drawFireball() {
 			for (var f in fireballs) {
-				ctx.fillStyle = "red";
-				ctx.fillRect(fireballs[f].x, fireballs[f].y, fireballs[f].w, fireballs[f].h);
+                if (fireballs[f].faceRight) {
+                    ctx.drawImage(fb, frame*40, 0, 40, 20, fireballs[f].x, fireballs[f].y, fireballs[f].w, fireballs[f].h);
+                } else {
+                    ctx.drawImage(fbL, frame*40, 0, 40, 20, fireballs[f].x, fireballs[f].y, fireballs[f].w, fireballs[f].h);
+                }
 			}
 		}
         
@@ -126,16 +160,16 @@
 				socket.emit('keyDown', 'left');
 				leftKey = true;
 			}
-
-			if (e.keyCode == UP) {
-				e.preventDefault();
-				socket.emit('keyDown', 'up');
-				upKey = true;
-			} else if (e.keyCode == DOWN) {
-				e.preventDefault();
-				socket.emit('keyDown', 'down');
-				downKey = true;
-			}
+            
+            if (e.keyCode == DOWN) {
+                e.preventDefault();
+                socket.emit('keyDown', 'down');
+                downKey = true;
+            } else if (e.keyCode == UP) {
+                e.preventDefault();
+                socket.emit('keyDown', 'up');
+                upKey = true;
+            }
 
 			if (e.keyCode == FIRE) {
 				e.preventDefault();
