@@ -265,6 +265,7 @@ module.exports = function (nickname, color, x, y, w, h) {
         for (var f in fireballs) {
             burn = fireballs[f];
             if (this.collide(burn)) {
+                burn.erase();
                 return f;
             }
         }
