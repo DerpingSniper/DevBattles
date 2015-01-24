@@ -11,12 +11,16 @@ users = {};
 colors = {};
 players = {};
 platforms = [];
+<<<<<<< HEAD
 
 port = [];
 
 fireballs = {};
 
 fireballID = 0;
+=======
+fireballs = [];
+>>>>>>> parent of 09c5436... Added fireballs and ducking and portals soon
 
 CANVAS_W = 600;
 CANVAS_H = 600;
@@ -47,8 +51,10 @@ io.sockets.on('connection', function (socket) {
         console.log("n: " + data[0] + "  c: " + data[1]);
         
 		if (nick in users) {
+            console.log("Username is broken");
 			callback(false);
 		}else if (color in colors) {
+            console.log("Color is broken");
 			callback(false);
 		}else if (nick && color) {
 			callback({
@@ -62,6 +68,7 @@ io.sockets.on('connection', function (socket) {
             colors[color] = socket.nickname;
 			io.sockets.emit('usernames', colors);
 		} else {
+            console.log("Both failed.");
 			callback(false);
 		}
 	});
@@ -119,6 +126,7 @@ platforms[platforms.length] = {
 	w: CANVAS_W,
 	h: 100
 };
+<<<<<<< HEAD
 //Give the portals a position
 port[port.length] = {
     x: PLAYER_W,
@@ -136,6 +144,10 @@ port[port.length] = {
 };
 
 setInterval(gameLoop, 1000/FPS);
+=======
+
+setInterval(gameLoop, 1000 / FPS);
+>>>>>>> parent of 09c5436... Added fireballs and ducking and portals soon
 
 function gameLoop() {
 	var player, test;
@@ -168,8 +180,7 @@ function gameLoop() {
 			x: fireball.x,
 			y: fireball.y,
 			w: fireball.w,
-			h: fireball.h,
-            faceRight: fireball.faceRight
+			h: fireball.h
 		}
 	}
 

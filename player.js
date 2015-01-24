@@ -15,7 +15,6 @@ module.exports = function (nickname, color, x, y, w, h) {
 	this.ySpeed = 0;
 	this.fall = false;
 	this.wall = false;
-    this.crouch = false;
 
 	this.up = false;
 	this.down = false;
@@ -27,22 +26,11 @@ module.exports = function (nickname, color, x, y, w, h) {
     this.cooldown = 100;
 
 	this.fireball = function () {
-		fireballs[fireballID] = new fireball(fireballID, this.faceRight, this.x, this.y, this.w, this.h);
+		fireballs[fireballs.length] = new fireball(this.faceRight, this.x, this.y, this.w, this.h);
         this.cooldown = 0;
-        fireballID++;
 	}
 
-	this.move = function () {
-        if (this.down && !this.crouch) {
-            this.h = h/2;
-            this.crouch = true;
-            this.y += this.h;
-        } else if (this.crouch && !this.down){
-            this.crouch = false;
-            this.y -= this.h;
-            this.h = h;
-        }
-        
+	this.move = function () {        
 		if (this.fall && !this.wall) {
 			if (this.ySpeed < MAX_YSPEED * ACCEL_TICKS) this.ySpeed++;
 			this.y += Math.ceil(this.ySpeed / ACCEL_TICKS);
@@ -71,7 +59,7 @@ module.exports = function (nickname, color, x, y, w, h) {
 					this.ySpeed = 0;
 				}
 			}
-		} else if (this.up && this.crouch == false) {
+		} else if (this.up) {
 			this.fall = true;
 			this.ySpeed = -JUMP;
 			this.y -= JUMP / ACCEL_TICKS;
@@ -190,10 +178,11 @@ module.exports = function (nickname, color, x, y, w, h) {
             this.cooldown++;
         }
         
+        
         var ball = this.collideFireball();
         if (ball > -1) {
             this.reset();
-            delete fireballs[fireball.id];
+            fireballs.splice(ball, 1);
         }
 	}
 

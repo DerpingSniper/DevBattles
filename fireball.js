@@ -1,36 +1,32 @@
 var collision = require('./collision.js');
-module.exports = function (id, faceRight, x, y, w, h) {
-    this.w = 40;
+module.exports = function (faceRight, x, y, w, h) {
+    this.w = 20;
     this.h = 20;
-    this.y = y + this.h/2 - 5;
-    this.id = id;
-    this.faceRight = faceRight;
-    
-	if (faceRight) {
+    this.y = y + 15;
+
+	if (faceRight == true) {
 		this.x = x + w + 1;
         this.speed = 4;
 	} else {
-		this.x = x - (this.w + 1);
+		this.x = x - 21;
 		this.speed = -4;
 	}
 
 	this.move = function () {
 		this.x += this.speed;
-        
-        if (this.speed > 0) {
-            this.speed = this.speed - 0.03;
-        } else {
-            this.speed = this.speed + 0.03;
-        }
-        
-        if (this.speed > -0.02 && this.speed < 0.02) {
-            this.erase();
-        }
 	}
     
-    this.erase = function () {
-        delete fireballs[this.id];
-    }
+    this.collidePlatforms = function () {
+		var platform;
+		for (var p in platforms) {
+			platform = platforms[p];
+			if (this.collide(platform)) {
+                this.erase();
+				return platform;
+			}
+		}
+		return false;
+	}
 
 	this.collide = function (obj) {
 		return collision(this.x, this.y, this.w, this.h, obj.x, obj.y, obj.w, obj.h);
