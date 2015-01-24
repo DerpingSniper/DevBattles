@@ -1,13 +1,12 @@
 {
-  "name": "node-platformer",
+  "name": "devBattles",
   "description": "Multiplayer platformer using node and HTML5",
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/allknowingfrog/node-platformer.git"
+    "url": "git://github.com/derpingsniper/DevBattles.git"
   },
-  "author": "Jeremiah Bohling",
-  "co-author": "Corbin Smith",
+  "author": "Corbin Smith",
   "dependencies": {
     "express": "~4.10.6",
     "socket.io": "~1.2.1"

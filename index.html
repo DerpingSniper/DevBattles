@@ -56,6 +56,7 @@
 		//misc vars
 		var platforms = [];
 		var fireballs = [];
+        var port = [];
 		var FPS = 150;
         
         var plat = new Image();
@@ -76,6 +77,7 @@
 			drawPlatforms();
 			drawPlayers();
 			drawFireball();
+            drawPortal();
             frameUp();
 		}
         
@@ -98,17 +100,8 @@
 			ctx = canvas.getContext('2d');
 			document.addEventListener('keydown', keyDown, false);
 			document.addEventListener('keyup', keyUp, false);
-			setInterval(gameLoop, 1000 / FPS);
+			setInterval(gameLoop, 1000/FPS);
 		}
-        
-        function sprite (options) {
-            var img = {};
-            
-            img.width = options.width;
-            img.height = options.height;
-            
-            return img;
-        }
 
 		//draw functions
 		function clearCanvas() {
@@ -137,6 +130,13 @@
                 }
 			}
 		}
+        
+        function drawPortal() {
+            for (var p in port) {
+                ctx.fillStyle = "white";
+                ctx.fillRect(port[p].x, port[p].y, port[p].w, port[p].h);
+            }
+        }
 
 		//input functions
 		function keyDown(e) {

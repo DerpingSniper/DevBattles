@@ -4,6 +4,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
 var player = require('./player.js');
+var portal = require('./portal.js');
 
 //globals
 users = {};
@@ -11,7 +12,7 @@ colors = {};
 players = {};
 platforms = [];
 
-portals = [];
+port = [];
 
 fireballs = {};
 
@@ -118,17 +119,15 @@ platforms[platforms.length] = {
 	w: CANVAS_W,
 	h: 100
 };
-
 //Give the portals a position
-portals[portals.length] = {
+port[port.length] = {
     x: PLAYER_W,
     y: CANVAS_H - 20,
     w: 20,
     h: 20,
     id: 1
 };
-
-portals[portals.length] = {
+port[port.length] = {
     x: PLAYER_W*5,
     y: CANVAS_H-150,
     w: 20,
@@ -136,7 +135,7 @@ portals[portals.length] = {
     id: 2
 };
 
-setInterval(gameLoop, 1000 / FPS);
+setInterval(gameLoop, 1000/FPS);
 
 function gameLoop() {
 	var player, test;
