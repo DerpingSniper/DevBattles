@@ -4,12 +4,15 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
 var player = require('./player.js');
+var portal = require('./portal.js');
 
 //globals
 users = {};
 colors = {};
 players = {};
 platforms = [];
+
+portals = [];
 
 fireballs = {};
 
@@ -20,9 +23,10 @@ CANVAS_H = 600;
 PLAYER_W = 50;
 PLAYER_H = 50;
 JUMP = 40;
-MAX_YSPEED = 7;
+MAX_YSPEED = 16;
 MAX_XSPEED = 3;
 STOMP_SPEED = 3;
+SPLATTER_SPEED = 15;
 ACCEL_TICKS = 10;
 FPS = 150;
 
@@ -40,6 +44,7 @@ io.sockets.on('connection', function (socket) {
         
         var nick = data[0];
         var color = data[1];
+        var portal = data[2];
 
         console.log("n: " + data[0] + "  c: " + data[1]);
         
@@ -51,7 +56,8 @@ io.sockets.on('connection', function (socket) {
 			callback({
 				CANVAS_W: CANVAS_W,
 				CANVAS_H: CANVAS_H,
-				platforms: platforms
+				platforms: platforms,
+                portals: portals
 			});
 			socket.nickname = nick;
 			users[socket.nickname] = socket;
@@ -79,6 +85,13 @@ io.sockets.on('connection', function (socket) {
 		}
 	});
 });
+
+//Gives the portals a position and ID
+portals[portals.length] = new portal(0, 10, 10, 50, 50);
+portals[portals.length] = new portal(1, CANVAS_W - PLAYER_W - 10, 10, 50, 50);
+portals[portals.length] = new portal(2, 10,CANVAS_W - PLAYER_H - PLAYER_H/2 - 10, 50, 50);
+portals[portals.length] = new portal(3, CANVAS_W - PLAYER_W - 10, CANVAS_H - PLAYER_H*2 - 10, 50, 50);
+
 //Give the platforms a position
 platforms[platforms.length] = {
 	x: 0,

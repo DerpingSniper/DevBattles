@@ -12,12 +12,13 @@
 		}
 		canvas {
 			display: block;
-			background-image: url("bg.png");
+            background:  url("bg.png");
 		}
 
 	</style>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.15.1/TimelineLite.min.js"></script>
     
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:800' rel='stylesheet' type='text/css'>
     
@@ -56,6 +57,8 @@
 		//misc vars
 		var platforms = [];
 		var fireballs = [];
+        var portals = [];
+        
 		var FPS = 150;
         
         var plat = new Image();
@@ -65,9 +68,26 @@
         fb.src = "fireballSheet.png";
         
         var fbL = new Image();
-        fbL.src = "fireballSheetLeft.png";
+        fbL.src = "fireballSheetLeft.png";        
+        
+        var pI = [];
+        
+        pI[0] = new Image();
+        pI[0].src = "PortalB.png";
+        
+        pI[1] = new Image();
+        pI[1].src = "PortalO.png";
+        
+        pI[2] = new Image();
+        pI[2].src = "PortalG.png";
+        
+        pI[3] = new Image();
+        pI[3].src = "PortalP.png";
+        
         
         var frame = 1;
+        var pframe = 1;
+        var pMove = 0;
         var tick = 0;
 
 		//game loop
@@ -76,18 +96,26 @@
 			drawPlatforms();
 			drawPlayers();
 			drawFireball();
+            drawPortal();
             frameUp();
         }
         
-        function frameUp(){
+        function frameUp() {
             tick++;
-            if (tick == 15){
+            if (tick == 20) {
                 frame++;
-                if (frame >= 19){
+                pMove++;
+                if (frame >= 19) {
                     frame = 1;
                 }
                 tick = 0;
+            } else if (tick == 10) {
+                pframe++;
+                if (pframe >= 4) {
+                    pframe = 1;
+                }
             }
+            
         }
 
 		//init functions
@@ -128,6 +156,20 @@
                 }
 			}
 		}
+        
+        function drawPortal() {
+            for (var p in portals) {
+                if (portals[p].id == 0) {
+                    ctx.drawImage(pI[0], pframe*50, 0, 50, 50, portals[p].x, portals[p].y, 50, 50);
+                } else if (portals[p].id == 1) {
+                    ctx.drawImage(pI[1], pframe*50, 0, 50, 50, portals[p].x, portals[p].y, 50, 50);
+                } else if (portals[p].id == 2) {
+                    ctx.drawImage(pI[2], pframe*50, 0, 50, 50, portals[p].x, portals[p].y, 50, 50);
+                } else if (portals[p].id == 3) {
+                    ctx.drawImage(pI[3], pframe*50, 0, 50, 50, portals[p].x, portals[p].y, 50, 50);
+                }
+            }
+        }
 
 		//input functions
 		function keyDown(e) {
@@ -155,7 +197,6 @@
 				e.preventDefault();
 				socket.emit('keyDown', 'fire');
 				fireKey = true;
-				console.log
 			}
 		}
 
@@ -201,6 +242,7 @@
 						CANVAS_W = data.CANVAS_W;
 						CANVAS_H = data.CANVAS_H;
 						platforms = data.platforms;
+                        portals = data.portals;
 						init();
 					} else {
 						nickError.html('<h2 style=color:#FFF;>That username is already taken! Please try again.</h2>');
@@ -257,7 +299,10 @@
 		<div id="output"></div>
 	</div>
 
-    <audio autoplay loop><source src=gameLoop.mp3 type=audio/mpeg></audio>
+    <audio autoplay loop>
+        <source src=bgm1.mp3 type=audio/mpeg>
+        Your browser does not support the audio element.
+    </audio>
 </body>
 
 </html>

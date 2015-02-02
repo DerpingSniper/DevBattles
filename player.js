@@ -24,7 +24,25 @@ module.exports = function (nickname, color, x, y, w, h) {
 	this.faceRight = true;
 	this.fire = false;
     
+    this.obj;
+    
     this.cooldown = 100;
+    
+    this.tp = function () {
+        if (this.obj.id == 0) {
+            this.x = portals[3].x - (PLAYER_W + 1);
+            this.y = portals[3].y;
+        } else if (this.obj.id == 1) {
+            this.x = portals[2].x + PLAYER_W + 1;
+            this.y = portals[2].y;
+        } else if (this.obj.id == 2) {
+            this.x = portals[1].x;
+            this.y = portals[1].y + PLAYER_H + 1;
+        } else if (this.obj.id == 3) {
+            this.x = portals[0].x;
+            this.y = portals[0].y + PLAYER_H + 1;
+        }
+    }
 
 	this.fireball = function () {
 		fireballs[fireballID] = new fireball(fireballID, this.faceRight, this.x, this.y, this.w, this.h);
@@ -93,19 +111,19 @@ module.exports = function (nickname, color, x, y, w, h) {
 		} else {
 			this.y += 1;
 			platform = this.collidePlatforms();
-			if (platform) {
-				this.y = platform.y - this.h;
-			} else {
-				this.fall = true;
-				this.ySpeed = 1;
-			}
-			player = this.collidePlayers();
-			if (player) {
-				this.y = player.y - this.h;
-			} else {
-				this.fall = true;
-				this.ySpeed = 1;
-			}
+            if (platform) {
+                this.y = platform.y - this.h;
+            } else {
+                this.fall = true;
+                this.ySpeed = 1;
+            }
+            player = this.collidePlayers();
+            if (player) {
+                this.y = player.y - this.h;
+            } else {
+                this.fall = true;
+                this.ySpeed = 1;
+            }
 		}
 
 		if (this.y < 0) this.y = 0;
@@ -195,6 +213,11 @@ module.exports = function (nickname, color, x, y, w, h) {
             this.reset();
             delete fireballs[fireball.id];
         }
+        
+        var tele = this.collidePortal();
+        if (tele) {
+            this.tp();
+        }
 	}
 
 	this.keyDown = function (key) {
@@ -271,13 +294,25 @@ module.exports = function (nickname, color, x, y, w, h) {
         }
         return -1;
     }
+    
+    this.collidePortal = function () {
+        var tp;
+        for (var p in portals) {
+            tp = portals[p];
+            if (this.collide(tp)) {
+                this.obj = tp;
+                return p;
+            }
+        }
+        return false;
+    }
 
 	this.collide = function (obj) {
 		return collision(this.x, this.y, this.w, this.h, obj.x, obj.y, obj.w, obj.h);
 	}
 
 	this.reset = function () {
-		this.x = Math.random()*CANVAS_W+1;
+		this.x = CANVAS_W/2 - PLAYER_W/2;
 		this.y = 0;
 		this.fall = false;
 		this.ySpeed = 0;
